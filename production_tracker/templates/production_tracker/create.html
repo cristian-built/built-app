@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block content %}
+  <link rel="stylesheet" href="{% static 'production_tracker/style.css' %}">
+  <div class="container">
+    <h1 class="display-1">Create New Production Entry</h1>
+    <form method="post" action="{% url 'production_tracker:create' %}" autocomplete="off">
+      {% csrf_token %}
+      {% for field in form %}
+        <div class="form-group">
+          <label class="input-group-text mb-3" for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {% render_field field class="form-control mb-3" %}  
+        </div>
+      {% endfor %}
+      
+      {{ form.formset.management_form }}
+
+      {% for form in formset.empty_form %}
+        <select id="empty-form-task-options" style="display: none;">
+          <option value="{{ forloop.counter0 }}">{{ form.task }}</option>
+        </select>
+        <select id="empty-form-unit-options" style="display: none;">
+          <option value="{{ forloop.counter0 }}">{{ form.unit }}</option>
+        </select>
+      {% endfor %}
+
+      <h2 class="display-2">Add Production Tasks for Each Unit</h2>
+      <hr>
+      
+      <div id="formset-rows">
+        {% for form in form.formset %}
+          <div class="formset-row row d-flex align-items-stretch flex-grow-1">
+            <div class="col-md-4 mb-3">
+              <label class="input-group-text mb-3" for="{{ form.unit.unit_id_for_label }}">Unit</label>
+              {% render_field form.unit class="form-control mb-3" %}              
+            </div>
+
+            <div class="col-md-4 mb-3">
+              <label class="input-group-text mb-3" for="{{ form.task.task_id_for_label }}">Task</label>
+              {% render_field form.task class="form-control mb-3" %}
+            </div>
+      
+            <div class="col-md-4 mb-3 tasktime">
+              <label class="input-group-text mb-3 tasktime_label" for="{{ form.task_time.id_for_label }}">Task Time</label>
+              <div class="range-slider-container">
+                {% render_field form.task_time class="form-range mb-3" %}
+                <span class="range-value rangevalue">{{ form.task_time.value|default_if_none:"0" }}</span>
+              </div>
+            </div>
+          </div>
+          <hr>
+        {% endfor %}
+      </div>
+      
+
+      <!-- <button type="button" id="add-production-task" class="btn btn-primary">+ Add Production Task</button> -->
+      <input type="submit" class="btn btn-primary w-100" value="Submit">
+    </form>
+    <script>
+      // Update range slider value display
+      const rangeSliders = document.querySelectorAll('.range-slider-container input[type="range"]');
+      rangeSliders.forEach(function (slider) {
+        const rangeValue = slider.parentNode.querySelector('.range-value');
+        rangeValue.textContent = slider.value;
+        slider.addEventListener('input', function () {
+          rangeValue.textContent = slider.value;
+        });
+      });
+    
+    </script>
+{% endblock content %}

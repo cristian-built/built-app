@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% load static %}
+{% load custom_filters %}  {# Load the custom_filters template tag library #}
+
+{% block content %}
+<div class="container">
+  <a href="{% url 'production_tracker:create' %}" class="btn btn-primary" style="width:100%;padding:1% 0;margin:1% 0" role="button">Create New Production Entry</a>
+
+  <link rel="stylesheet" href="{% static 'production_tracker/style.css' %}">
+
+  {% if todays_productions_list %}
+    <h2>Recent Production Entries</h2>
+    <div class="container">
+      <div class="row d-flex justify-content-start">
+        {% for production in todays_productions_list %}
+        <div class="col-sm-4 mb-3 card text-center border-dark">
+          <h5 class="card-title mb-3">{{ production.entry_date|date:"M d, Y" }}</h5>
+          <p class="card-text text-start mb-3">User: {{ production.user }}</p>
+          <p class="card-text text-start mb-3">Tasks: {{ production.tasks.all|unique_values:'task_name'|join:', ' }}</p>
+          <p class="card-text text-start mb-3">Units: {{ production.units.all|unique_values:'unit_name'|join:', ' }}</p>
+          <p class="card-text text-start mb-3">Total Task Time: {{ production|calculate_total_task_time }} hours</p>
+          <a href="{% url 'production_tracker:detail' production.entry_id %}" class="btn btn-secondary mb-3 stretched-link">Go to Detail Page</a>
+        </div>
+        {% endfor %}
+      </div>
+    </div>    
+  {% else %}
+    <p>No Productions are available.</p>
+  {% endif %}
+</div>
+{% endblock %}

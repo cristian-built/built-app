@@ -1,0 +1,66 @@
+<!-- detail.html -->
+{% extends 'base.html' %}
+
+{% load custom_filters %}
+
+{% block content %}
+  <h1>Production Details</h1>
+  <table class="table">
+    <tr>
+      <th>User:</th>
+      <td>{{ production.user }}</td>
+    </tr>
+    <tr>
+      <th>Entry Date:</th>
+      <td>{{ production.entry_date }}</td>
+    </tr>
+    <tr>
+      <th>Notes:</th>
+      <td>{{ production.notes }}</td>
+    </tr>
+    <tr>
+      <th>Number of units: </th>
+      <td>{{ production.units.all|unique_values:"unit_name"|length }}</td>
+    </tr>
+    <tr>
+      <th>Units:</th>
+      <td>
+        {% for unit in production.units.all|unique_values:"unit_name" %}
+          {{ unit }}
+          {% if not forloop.last %}, {% endif %}
+        {% empty %}
+          No units available.
+        {% endfor %}
+      </td>
+    </tr>
+    <tr>
+      <th>Tasks:</th>
+      <td>
+        <table class="table table-striped">
+          <tr>
+            <th>Task Name</th>
+            <th>Unit Name</th>
+            <th>Task Time</th>
+          </tr>
+          {% for production_task in production.productiontask_set.all %}
+            <tr>
+              <td>{{ production_task.task.task_name }}</td>
+              <td>{{ production_task.unit.unit_name }}</td>
+              <td>{{ production_task.task_time }}</td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="3">No tasks available.</td>
+            </tr>
+          {% endfor %}
+          {% with total_task_time=production|calculate_total_task_time %}
+          <tr>
+            <td colspan="2"><strong>Total Task Time:</strong></td>
+            <td>{{ total_task_time }}</td>
+          </tr>
+        {% endwith %}      
+        </table>
+      </td>
+    </tr>
+  </table>
+{% endblock %}

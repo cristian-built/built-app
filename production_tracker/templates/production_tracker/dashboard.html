@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+  <h1>Dashboard</h1>
+
+  <form class="row g-3" method="GET" action="{% url 'production_tracker:dashboard' %}">
+    <!-- User filter -->
+    <div class="col-md-3">
+      <label class="input-group-text" for="users">Users:</label>
+      <select class="form-select" id="users" name="users" multiple>
+        {% for user in users %}
+          <option value="{{ user.pk }}">{{ user.username }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <!-- Job filter -->
+    <div class="col-md-3">
+      <label class="input-group-text" for="jobs">Jobs:</label>
+      <select class="form-select" id="jobs" name="jobs" multiple>
+        {% for job in jobs %}
+          <option value="{{ job.pk }}">{{ job.job_name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <!-- Task filter -->
+    <div class="col-md-3">
+      <label class="input-group-text" for="tasks">Tasks:</label>
+      <select class="form-select" id="tasks" name="tasks" multiple>
+        {% for task in tasks %}
+          <option value="{{ task.pk }}">{{ task.task_name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <!-- Task filter -->
+    <div class="col-md-3">
+      <label class="input-group-text" for="units">Units:</label>
+      <select class="form-select" id="units" name="units" multiple>
+        {% for unit in units %}
+          <option value="{{ unit.pk }}">{{ unit.unit_name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <!-- Date filter -->
+    <div class="col-md-6">
+      <label class="input-group-text" for="start_date">Start Date:</label>
+      <input class="form-control" type="date" id="start_date" name="start_date" value="{{ start_date|default_if_none:'MM-DD-YYYY' }}">
+    </div>
+    <div class="col-md-6">
+      <label class="input-group-text" for="end_date">End Date:</label>
+      <input class="form-control" type="date" id="end_date" name="end_date" value="{{ end_date|default_if_none:'MM-DD-YYYY' }}">
+    </div>
+    <div class="d-grid gap-2">
+      <button class="btn btn-primary" type="submit">Apply Filters</button>
+    </div>
+  </form>
+
+  <!-- Display summary statistics -->
+  <h2>Summary Statistics</h2>
+  <div class="row d-flex">
+    <div class="col-md-3 d-flex align-items-stretch flex-grow-1">
+      <div class="card mb-3">
+        <div class="card-body">
+          <h5 class="card-title">Total Task Time</h5>
+          <h6 class="card-subtitle mb-2 text-body-secondary">{{ total_task_time }}</h6>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Task</th>
+                <th>Task Time</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for key, value in task_time_df.items %}
+                <tr>
+                  <td>{{ key }}</td>
+                  <td>{{ value }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3 d-flex align-items-stretch flex-grow-1">
+      <div class="card mb-3">
+        <div class="card-body">
+          <h5 class="card-title">Total Days Worked</h5>
+          <h6 class="card-subtitle mb-2 text-body-secondary">{{ days_worked }}</h6>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Entry Date</th>
+                <th>Task Time</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for entry_date, task_time in days_worked_df.items %}
+                <tr>
+                  <td>{{ entry_date }}</td>
+                  <td>{{ task_time }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>          
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3 d-flex align-items-stretch flex-grow-1">
+      <div class="card mb-3">
+        <div class="card-body">
+          <h5 class="card-title">Total Persons</h5>
+          <h6 class="card-subtitle mb-2 text-body-secondary">{{ unique_users }}</h6>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Entry Date</th>
+                <th>Name</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for index, row in persons_worked_df.iterrows %}
+                <tr>
+                  <td>{{ row.entry_date }}</td>
+                  <td>{{ row.Name|join:', ' }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>          
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3 d-flex align-items-stretch flex-grow-1">
+      <div class="card mb-3">
+        <div class="card-body">
+          <h5 class="card-title">Total Units</h5>
+          <h6 class="card-subtitle mb-2 text-body-secondary">{{ units_worked }}</h6>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Entry Date</th>
+                <th>Unit Name</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for index, row in units_worked_df.iterrows %}
+                <tr>
+                  <td>{{ row.entry_date }}</td>
+                  <td>{{ row.unit_name|join:', ' }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>   
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Display charts -->
+  <h2>Production Charts</h2>
+  <!-- Add your chart components here -->
+  
+  <!-- Pie Chart -->
+  <div>{{ fig|safe }}</div>
+  
+  <!-- Line Chart -->
+  <div>{{ fig1|safe }}</div>
+
+  <!-- Bar Chart -->
+  <div>{{ fig2|safe }}</div>
+
+  <!-- <div>{{ html_table|safe }}</div>
+
+  <hr>
+  <br>
+  <div>{{ prod_df|safe }}</div>
+  <hr>
+  <br>
+  <div>{{ merged_df|safe }}</div>
+  <div>{{bar_chart_df|safe}}</div> -->
+</div>
+{% endblock %}

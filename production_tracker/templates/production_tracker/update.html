@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>Update Production</h2>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    {{ formset.management_form }}
+    <table>
+    <!-- Display formset errors -->
+    {% if formset.errors %}
+        <div class="alert alert-danger">
+        <ul>
+            {% for error in formset.errors %}
+            <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+        </div>
+    {% endif %}
+      {% for form in formset %}
+        <!-- {{ form.as_p }} -->
+        <div class="formset-row">
+            <div class="mb-3">
+              <label >Unit:</label>
+              {{ form.unit }}
+            </div>
+
+            <div class="mb-3">
+              <label>Task:</label>
+              {{ form.task }}
+            </div>
+      
+            <div class="mb-3 tasktime">
+              <label class="tasktime_label" for="{{ form.task_time.id_for_label }}">Task Time:</label>
+              <div class="range-slider-container">
+                {{ form.task_time }}
+                <span class="range-value rangevalue">{{ form.task_time.value|default_if_none:"0" }}</span>
+              </div>
+            </div>
+          </div>
+      {% endfor %}
+    </table>
+    <button type="submit">Save</button>
+  </form>
+  <script>
+    // Update range slider value display
+    const rangeSliders = document.querySelectorAll('.range-slider-container input[type="range"]');
+    rangeSliders.forEach(function (slider) {
+      const rangeValue = slider.parentNode.querySelector('.range-value');
+      rangeValue.textContent = slider.value;
+      slider.addEventListener('input', function () {
+        rangeValue.textContent = slider.value;
+      });
+    });
+  </script>
+{% endblock %}

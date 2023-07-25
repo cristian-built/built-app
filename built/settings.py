@@ -29,10 +29,10 @@ environ.Env.read_env()
 
 # SECURITY WARNING: keep the secret key used in production secret!
 # SECRET_KEY = 'django-insecure-1-*y7*f(-!f23_r11nbra=ms-%0t^25rh7%yiffs1x)7w#b0jz'
-SECRET_KEY = env('SECRET_KEY')
+# SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['127.0.0.1', '*']
 
@@ -94,6 +94,18 @@ WSGI_APPLICATION = 'built.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
+
+"""DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'builtdb', 
+        'USER': 'builtadmin', 
+        'PASSWORD': 'r1P3>7&Y_+',
+        'HOST': '127.0.0.1', 
+        'PORT': '5432',
+    }
+}"""
+
 
 # Render PostgreSQL database(Live)
 import dj_database_url
@@ -166,11 +178,23 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 # all-auth
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend' #new
+
+EMAIL_HOST = 'smtp.gmail.com' #new
+
+EMAIL_PORT = 587 #new
+
+EMAIL_HOST_USER = 'cristian@builtbdg.com'  #new
+
+EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD') #new
+
+EMAIL_USE_TLS = True #new
 
 ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
 
-ACCOUNT_EMAIL_VERIFICATION = 'none'
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = 'account_login'

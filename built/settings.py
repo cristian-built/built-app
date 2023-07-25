@@ -186,6 +186,8 @@ EMAIL_HOST = 'smtp.gmail.com' #new
 
 EMAIL_PORT = 587 #new
 
+EMAIL_USE_SSL = False
+
 EMAIL_HOST_USER = 'cristian@builtbdg.com'  #new
 
 EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD') #new

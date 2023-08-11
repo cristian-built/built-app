@@ -10,6 +10,7 @@ class JobSite(models.Model):
     job_site_city = models.CharField(max_length=100)
     job_site_state = models.CharField(max_length=2)
     job_site_zipcode = models.CharField(max_length=10)
+    job_site_active = models.BooleanField(default=True)
     def __str__(self):
         return f"{self.job_site_name}: {self.job_site_location}"
 
@@ -17,6 +18,7 @@ class Job(models.Model):
     job_id = models.AutoField(primary_key=True)
     job_name = models.CharField(max_length=100)
     job_site = models.ForeignKey(JobSite, on_delete=models.CASCADE)
+    job_active = models.BooleanField(default=True)
     def __str__(self):
         return self.job_name
 
@@ -24,6 +26,7 @@ class Unit(models.Model):
     unit_id = models.AutoField(primary_key=True, blank=True)
     unit_name = models.CharField(max_length=100)
     job = models.ForeignKey(Job, on_delete=models.CASCADE)
+    unit_active = models.BooleanField(default=True)
     def __str__(self):
         return self.unit_name
 
@@ -38,6 +41,7 @@ class CustomUser(AbstractUser):
 class Task(models.Model):
     task_id = models.AutoField(primary_key=True, blank=True)
     task_name = models.CharField(max_length=100)
+    task_active = models.BooleanField(default=True)
     def __str__(self):
         return self.task_name
 

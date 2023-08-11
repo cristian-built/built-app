@@ -9,7 +9,7 @@ from django.utils.html import escape
 from .forms import ProductionForm, ProductionTaskFormSet
 from django.forms import formset_factory
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic.edit import CreateView
 
 from django.utils.timezone import timedelta
@@ -35,10 +35,17 @@ def combine_2_string_cols(row, col1, col2):
 
 
 
-class DashboardView(LoginRequiredMixin, generic.ListView):
+class DashboardView(LoginRequiredMixin, UserPassesTestMixin, generic.ListView):
     model = Production
     template_name = "production_tracker/dashboard.html"
     context_object_name = "production_list"
+
+    def test_func(self):
+        # Implement the test logic here
+        return self.request.user.groups.filter(name='Manager').exists()
+
+    def handle_no_permission(self):
+        return HttpResponseRedirect(reverse('production_tracker:index'))  # Redirect to IndexView for non-manager users
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

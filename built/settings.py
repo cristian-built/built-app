@@ -69,7 +69,6 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     "debug_toolbar.middleware.DebugToolbarMiddleware",
-    'production_tracker.context_processors.custom_context', # Added this line
 ]
 
 ROOT_URLCONF = 'built.urls'
@@ -85,6 +84,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'production_tracker.context_processors.custom_context', # Added this line
             ],
         },
     },

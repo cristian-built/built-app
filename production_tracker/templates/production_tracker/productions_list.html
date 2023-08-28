@@ -28,9 +28,9 @@
     <br>
 
     {% if active_tab == 'productions' %}
-        {{ p_df|safe }}
+        <div class="table-responsive-sm">{{ p_df|safe }}</div>
     {% elif active_tab == 'dailies' %}
-        {{ daily_report_by_unit|safe }}
+        <div class="table-responsive-sm">{{ daily_report_by_unit|safe }}</div>
     {% endif %}
     
 {% endblock %}

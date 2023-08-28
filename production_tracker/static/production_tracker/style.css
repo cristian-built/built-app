@@ -37,3 +37,6 @@ form {
 .btn-primary{
     margin: 2vw 0;
 }
+th, td{
+    text-align: center;
+}

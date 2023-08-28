@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block content %}
+    <ul class="nav nav-pills nav-fill">
+        <li class="nav-item">
+            <a class="nav-link {% if active_tab == 'productions' %}active{% endif %}" href="{% url 'production_tracker:productions' %}">Productions</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if active_tab == 'dailies' %}active{% endif %}" href="{% url 'production_tracker:dailies' %}">Daily Productions</a>
+        </li>
+    </ul>
+    <form method="get">
+        <label class="form-control" for="start_date">Start Date:</label>
+        <input class="form-control" type="date" id="start_date" name="start_date" value="{{ start_date }}">
+        <label class="form-control" class="form-control" for="end_date">End Date:</label>
+        <input class="form-control" type="date" id="end_date" name="end_date" value="{{ end_date }}">
+        
+        <label class="form-control" for="users">Select Users:</label>
+        <select class="form-select" name="users" multiple>
+            {% for user in users %}
+                <option value="{{ user.id }}" {% if user.id in selected_users %}selected{% endif %}>{{ user.username }}</option>
+            {% endfor %}
+        </select>
+        
+        <button class="btn btn-dark" style="margin-top:1vw;" type="submit">Apply Filters</button>
+    </form>    
+    <br>
+
+    <br>
+
+    {% if active_tab == 'productions' %}
+        {{ p_df|safe }}
+    {% elif active_tab == 'dailies' %}
+        {{ daily_report_by_unit|safe }}
+    {% endif %}
+    
+{% endblock %}

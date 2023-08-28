@@ -39,6 +39,9 @@
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'production_tracker:dashboard' %}"><b class="navbar-brand d-flex display-2">Dashboard</b></a>
                 </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="{% url 'production_tracker:productions' %}"><b class="navbar-brand d-flex display-2">Reports</b></a>
+                </li>
               {% endif %}
               <li class="nav-item">
                 {% if user.is_authenticated %}

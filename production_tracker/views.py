@@ -350,11 +350,12 @@ class ProductionsListView(LoginRequiredMixin, generic.ListView):
 
         units_df = pd.DataFrame(list(Unit.objects.all().values()))[['unit_id', 'unit_name']]
         context["units_df"] = units_df.to_html()
-
+        
         productions = Production.objects.filter(
             user__in=selected_users,
             entry_date__range=[start_date, end_date]
         ).order_by("user", "entry_date")
+
         productions_data = list(productions.values())
 
         productions_data_df = pd.DataFrame(productions_data)
@@ -365,34 +366,38 @@ class ProductionsListView(LoginRequiredMixin, generic.ListView):
         production_tasks_data = list(production_tasks.values())
         production_tasks_data_df = pd.DataFrame(production_tasks_data)
 
-        productions_merged_df = pd.merge(pd.merge(pd.merge(pd.merge(productions_data_df, production_tasks_data_df.rename(columns={'production_id':'entry_id'}), how='left', on='entry_id'), units_df, on='unit_id', how='left'), tasks_df, on='task_id', how='left'), users_df, on='user_id', how='left')
-        productions_merged_df = productions_merged_df[['entry_date', 'Name', 'notes', 'unit_name', 'task_name', 'task_time']]
-        productions_merged_df = productions_merged_df.rename(columns={
-            'entry_date':'Date',  
-            'notes':'Notes', 
-            'unit_name':'Unit Name', 
-            'task_name':'Task Name', 
-            'task_time': 'Number of Hours'
-        })
+        if production_tasks_data_df.empty or productions_data_df.empty:
+            context["p_df"] = '<span class="d-block p-2 text-center my-3 text-bg-dark">"No data to display."</span>'
+            context["daily_report_by_unit"] = '<span class="d-block p-2 text-center my-3 text-bg-dark">"No data to display."</span>'
+        else:
+            productions_merged_df = pd.merge(pd.merge(pd.merge(pd.merge(productions_data_df, production_tasks_data_df.rename(columns={'production_id':'entry_id'}), how='left', on='entry_id'), units_df, on='unit_id', how='left'), tasks_df, on='task_id', how='left'), users_df, on='user_id', how='left')
+            productions_merged_df = productions_merged_df[['entry_date', 'Name', 'notes', 'unit_name', 'task_name', 'task_time']]
+            productions_merged_df = productions_merged_df.rename(columns={
+                'entry_date':'Date',  
+                'notes':'Notes', 
+                'unit_name':'Unit Name', 
+                'task_name':'Task Name', 
+                'task_time': 'Number of Hours'
+            })
 
-        p_df = pd.DataFrame(productions_merged_df.groupby(['Date','Name', 'Notes', 'Unit Name', 'Task Name'])['Number of Hours'].sum())
+            p_df = pd.DataFrame(productions_merged_df.groupby(['Date','Name', 'Notes', 'Unit Name', 'Task Name'])['Number of Hours'].sum())
 
-        daily_report_by_unit = productions_merged_df.copy()
-        daily_report_by_unit = pd.DataFrame(daily_report_by_unit.groupby(['Unit Name', 'Date', 'Task Name'])[['Number of Hours', 'Notes']].sum())
-
+            daily_report_by_unit = productions_merged_df.copy()
+            daily_report_by_unit = pd.DataFrame(daily_report_by_unit.groupby(['Unit Name', 'Date', 'Task Name'])[['Number of Hours', 'Notes']].sum())
+            context["p_df"] = p_df.to_html(classes="table table-bordered border-dark").replace("<th", "<th class='align-middle' style='text-align:center;'").replace("<td", "<td class='align-middle' style='text-align:center;'")
+            context["daily_report_by_unit"] = daily_report_by_unit.to_html(classes="table table-bordered border-dark").replace("<th", "<th class='align-middle' style='text-align:center;'").replace("<td", "<td class='align-middle' style='text-align:center;'")
+        
         context["users"] = CustomUser.objects.all()
         context["selected_users"] = selected_users
-        context["jobs"] = jobs
-        context["tasks"] = tasks
-        context["units"] = units
+        # context["jobs"] = jobs
+        # context["tasks"] = tasks
+        # context["units"] = units
         context["start_date"] = start_date.strftime("%Y-%m-%d")  # Update the start_date format
         context["end_date"] = end_date.strftime("%Y-%m-%d")  # Update the end_date format
         context["productions_data_df"] = productions_data_df.to_html()
         context["production_tasks_data_df"] = production_tasks_data_df.to_html()
-        context["productions_merged_df"] = productions_merged_df.to_html()
-        context["p_df"] = p_df.to_html(classes="table table-bordered border-dark").replace("<th", "<th class='align-middle' style='text-align:center;'").replace("<td", "<td class='align-middle' style='text-align:center;'")
-        context["daily_report_by_unit"] = daily_report_by_unit.to_html(classes="table table-bordered border-dark").replace("<th", "<th class='align-middle' style='text-align:center;'").replace("<td", "<td class='align-middle' style='text-align:center;'")
-        
+        # context["productions_merged_df"] = productions_merged_df.to_html()
+
 
         # Set the active tab based on the URL
         if self.request.path == reverse('production_tracker:dailies'):
